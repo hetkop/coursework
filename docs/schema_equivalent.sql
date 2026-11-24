@@ -1,0 +1,88 @@
+CREATE TABLE Categories (
+    CategoryID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    Name TEXT NOT NULL);
+CREATE UNIQUE INDEX index_Categories_Name ON Categories (Name);
+
+CREATE TABLE Materials (
+    MaterialID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    Name TEXT NOT NULL);
+CREATE UNIQUE INDEX index_Materials_Name ON Materials (Name);
+
+CREATE TABLE Styles (
+    StyleID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    Name TEXT NOT NULL);
+CREATE UNIQUE INDEX index_Styles_Name ON Styles (Name);
+
+CREATE TABLE Statuses (
+    StatusID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    Name TEXT NOT NULL);
+CREATE UNIQUE INDEX index_Statuses_Name ON Statuses (Name);
+
+CREATE TABLE Customers (
+    CustomerID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    FirstName TEXT NOT NULL,
+    LastName TEXT NOT NULL,
+    PhoneNumber TEXT NOT NULL,
+    ShippingAddress TEXT NOT NULL);
+CREATE INDEX index_Customers_LastName ON Customers (LastName);
+
+CREATE TABLE Suppliers (
+    SupplierID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    CompanyName TEXT NOT NULL,
+    ContactPerson TEXT NOT NULL,
+    PhoneNumber TEXT NOT NULL);
+
+CREATE TABLE Products (
+    ProductID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    Name TEXT NOT NULL,
+    Description TEXT,
+    Price REAL NOT NULL,
+    InStock INTEGER NOT NULL,
+    CategoryID INTEGER NOT NULL,
+    MaterialID INTEGER NOT NULL,
+    StyleID INTEGER NOT NULL,
+    FOREIGN KEY (CategoryID) REFERENCES Categories (CategoryID) ON UPDATE NO ACTION ON DELETE NO ACTION,
+    FOREIGN KEY (MaterialID) REFERENCES Materials (MaterialID) ON UPDATE NO ACTION ON DELETE NO ACTION,
+    FOREIGN KEY (StyleID) REFERENCES Styles (StyleID) ON UPDATE NO ACTION ON DELETE NO ACTION);
+CREATE INDEX index_Products_Name ON Products (Name);
+CREATE INDEX index_Products_CategoryID ON Products (CategoryID);
+CREATE INDEX index_Products_MaterialID ON Products (MaterialID);
+CREATE INDEX index_Products_StyleID ON Products (StyleID);
+
+CREATE TABLE Orders (
+    OrderID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    CustomerID INTEGER NOT NULL,
+    StatusID INTEGER NOT NULL,
+    OrderDate TEXT NOT NULL,
+    FOREIGN KEY (CustomerID) REFERENCES Customers (CustomerID) ON UPDATE NO ACTION ON DELETE NO ACTION,
+    FOREIGN KEY (StatusID) REFERENCES Statuses (StatusID) ON UPDATE NO ACTION ON DELETE NO ACTION);
+CREATE INDEX index_Orders_CustomerID ON Orders (CustomerID);
+CREATE INDEX index_Orders_StatusID ON Orders (StatusID);
+CREATE INDEX index_Orders_OrderDate ON Orders (OrderDate);
+
+CREATE TABLE OrderItems (
+    OrderItemID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    OrderID INTEGER NOT NULL,
+    ProductID INTEGER NOT NULL,
+    Quantity INTEGER NOT NULL,
+    FOREIGN KEY (OrderID) REFERENCES Orders (OrderID) ON UPDATE NO ACTION ON DELETE CASCADE,
+    FOREIGN KEY (ProductID) REFERENCES Products (ProductID) ON UPDATE NO ACTION ON DELETE NO ACTION);
+CREATE INDEX index_OrderItems_OrderID ON OrderItems (OrderID);
+CREATE INDEX index_OrderItems_ProductID ON OrderItems (ProductID);
+
+CREATE TABLE Supplies (
+    SupplyID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    SupplyDate TEXT NOT NULL);
+
+CREATE TABLE SupplyItems (
+    SupplyItemID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    SupplyID INTEGER NOT NULL,
+    ProductID INTEGER NOT NULL,
+    SupplierID INTEGER NOT NULL,
+    Quantity INTEGER NOT NULL,
+    FOREIGN KEY (SupplyID) REFERENCES Supplies (SupplyID) ON UPDATE NO ACTION ON DELETE CASCADE,
+    FOREIGN KEY (ProductID) REFERENCES Products (ProductID) ON UPDATE NO ACTION ON DELETE NO ACTION,
+    FOREIGN KEY (SupplierID) REFERENCES Suppliers (SupplierID) ON UPDATE NO ACTION ON DELETE NO ACTION);
+CREATE INDEX index_SupplyItems_SupplyID ON SupplyItems (SupplyID);
+CREATE INDEX index_SupplyItems_ProductID ON SupplyItems (ProductID);
+CREATE INDEX index_SupplyItems_SupplierID ON SupplyItems (SupplierID);
